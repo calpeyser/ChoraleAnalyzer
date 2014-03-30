@@ -1,32 +1,29 @@
-# Function checks for parallel octaves.  Returns an error message to 
+# Funciton checks for parallel octaves.  Returns an error message to
 # be printed, if any.
 from music21 import *
 
-def checkParallelOctaves(chorale):
+#def getOffsets
+
+def checkParallelOctaves(input):
     # output is a list of strings which give error messages
     output = [];
 
-    # parallelFifths is a list of VoiceLeadingQuartet objects, each 
-    # which gives a pair of intervals in illegal relationship to 
-    # eachother.
-    parallelOctaves = theoryAnalysis.theoryAnalyzer.getParallelOctaves(chorale);
-    # iterate through list, produce error message for each VoiceLeadingQuartet
-    # object.
+    chorale = input[0];
+    offsetInfo = input[1];
+    partNames = ["soprano", "alto", "tenor", "bass"];
+    
+    for partNumber1 in range(4):
+        for partNumber2 in range(4)[partNumber1+1:]:
+            offsets1 = offsetInfo[partNumber1][0];
+            offsetDict1 = offsetInfo[partNumber1][1];
+            offsets2 = offsetInfo[partNumber2][0];
+            offsetDict2 = offsetInfo[partNumber2][1];
+            for offset in offsets1[:-1]:
+                if (offset in offsets2) and (offset != offsets2[-1]):
+                    int1 = interval.Interval(offsetDict1[offset], offsetDict2[offset]);     
+                    int2 = interval.Interval(offsetDict1[offsets1[offsets1.index(offset)+1]], offsetDict2[offsets2[offsets2.index(offset)+1]]);
+                    if (int1 == int2 == interval.Interval('P8') or int1 == int2 == interval.Interval("P-8")):
+                        output.append('Parallel octave in ' + str(partNames[partNumber1]) + ' and ' + str(partNames[partNumber2]) + " in measure " + str(offset).split(".")[0]);
 
-    if not parallelOctaves:
-        return output;
-        
-    for octave in parallelOctaves:
-        output.append('Parallel octave found!' +
-                      '\n Measure Number: ' + str(octave.v1n1.measureNumber) +
-                      '\n First Voice: ' + 
-                      '\n     First Note:  ' + str(octave.v1n1.fullName) +
-                      '\n     Second Note: ' + str(octave.v1n2.fullName) +
-                      '\n Second Voice: ' +
-                      '\n     First Note:  ' + str(octave.v2n1.fullName) +
-                      '\n     Second Note: ' + str(octave.v2n2.fullName) +
-                      '\n')
-                      
-                      
-                 
     return output;
+    

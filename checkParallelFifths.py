@@ -1,29 +1,27 @@
-# Function checks for parallel fifths.  Returns an error message to 
+# Funciton checks for parallel fifths.  Returns an error message to
 # be printed, if any.
 from music21 import *
 
-def checkParallelFifths(chorale):
+def checkParallelFifths(input):
     # output is a list of strings which give error messages
     output = [];
 
-    # parallelFifths is a list of VoiceLeadingQuartet objects, each 
-    # which gives a pair of intervals in illegal relationship to 
-    # eachother.
-    parallelFifths = theoryAnalysis.theoryAnalyzer.getParallelFifths(chorale);
+    chorale = input[0];
+    offsetInfo = input[1];
+    partNames = ["soprano", "alto", "tenor", "bass"]
     
-    # iterate through list, produce error message for each VoiceLeadingQuartet
-    # object.
-    if not parallelFifths:
-        return output;
+    for partNumber1 in range(4):
+        for partNumber2 in range(4)[partNumber1+1:]:
+            offsets1 = offsetInfo[partNumber1][0];
+            offsetDict1 = offsetInfo[partNumber1][1];
+            offsets2 = offsetInfo[partNumber2][0];
+            offsetDict2 = offsetInfo[partNumber2][1];
+            for offset in offsets1[:-1]:
+                if (offset in offsets2) and (offset != offsets2[-1]):
+                    int1 = interval.Interval(offsetDict1[offset], offsetDict2[offset]);     
+                    int2 = interval.Interval(offsetDict1[offsets1[offsets1.index(offset)+1]], offsetDict2[offsets2[offsets2.index(offset)+1]]);
+                    if (int1 == int2 == interval.Interval('P5') or int1 == int2 == interval.Interval('P-5')):
+                        output.append('Parallel fifth in ' + str(partNames[partNumber1]) + ' and ' + str(partNames[partNumber2]) + " in measure " + str(offset).split(".")[0]);
 
-    for fifth in parallelFifths:
-        output.append('Parallel fifth found!' +
-                      '\n Measure Number: ' + str(fifth.v1n1.measureNumber) +
-                      '\n First Voice: ' + 
-                      '\n     First Note:  ' + str(fifth.v1n1.fullName) +
-                      '\n     Second Note: ' + str(fifth.v1n2.fullName) +
-                      '\n Second Voice: ' +
-                      '\n     First Note:  ' + str(fifth.v2n1.fullName) +
-                      '\n     Second Note: ' + str(fifth.v2n2.fullName) +
-                      '\n')                 
     return output;
+    

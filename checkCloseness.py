@@ -35,9 +35,10 @@ def checkCloseness(slices):
         chord = slice.getChord();
  #       if (failedTenorSopranoDistance(chord)):
  #           output.append('Interval between tenor and soprano greater than a 12th in measure ' + str(chord[3].measureNumber));
-        if (failedAltoSopranoDistance(chord)):
-            output.append('Interval betweeen alto and soprano greater than an octave in measure ' + str(chord[1].measureNumber));
-        if (failedTenorAltoDistance(chord)):
-            output.append('Interval between tenor and alto greater than an octave in measure ' + str(chord[2].measureNumber));
+        if len(chord) == 4:
+            if (failedAltoSopranoDistance(chord)):
+                output.append('Interval betweeen alto and soprano greater than an octave in measure ' + str(chord[1].measureNumber) + " beat " + str(chord[1].beat));
+            if (failedTenorAltoDistance(chord)):
+                output.append('Interval between tenor and alto greater than an octave in measure ' + str(chord[2].measureNumber) + " beat " + str(chord[2].beat));
                
     return output;

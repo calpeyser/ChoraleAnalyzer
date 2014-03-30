@@ -6,57 +6,60 @@ from checkZeroOrder import *
 from checkVoiceLeading import *
 from checkHarmony import *
 from utilities import *
+from gatherProgs import * 
 import subprocess, glob
 
-# there must be at least one command line argument
-if len(sys.argv) < 2:
-    print "Required input: musicXML file."
-    exit();
+def ChoraleAnalyzer(XMLfile, ROMANfile, parallelsFlag = True, errFlag = False):
+    out = [];
+    out.append(("--------------------Chorale Analyzer-----------------"));
+        
+    # list for error storage
+    assignList();
 
-print("--------------------Chorale Analyzer-----------------");
+    # parse and store MusicXML file
+    chorale = converter.parse(XMLfile);
 
-# list for error storage
-assignList();
-
-# parse and store MusicXML file
-chorale = converter.parse(sys.argv[1]);
-
-# parse and store Roman Numeral Analysis
-harmonyFlag = False;
-if len(sys.argv) > 2:
-    rntext = converter.parse(sys.argv[2]);
+    # parse and store Roman Numeral Analysis
+#NOTE MAY WANT TO INCLUDE OPTION TO EXCLUDE HARMONY
+    harmonyFlag = False;
+    rntext = converter.parse(ROMANfile);
     harmonyFlag = True; 
 
-parallelsFlag = True;
-if len(sys.argv) == 4:
-    parallelsFlag = False;
+    if parallelsFlag:
+        for line in checkParallels(chorale):
+            out.append(line);
 
-if parallelsFlag:
-    checkParallels(chorale)
+    for line in checkZeroOrder(chorale):
+        out.append(line);
+    for line in checkVoiceLeading(chorale):
+        out.append(line);
+    for line in checkHarmony(chorale, rntext):
+        out.append(line);
 
-checkZeroOrder(chorale);
-checkVoiceLeading(chorale);
-if (harmonyFlag == True): 
-    checkHarmony(chorale, rntext);
+    # progression trackers
+    progTrackers = gatherProgs(rntext);
 
-# read output
-errorTracker = errorTracker();
-# utilities.py has already taken care of writing to 'errors'.  
-# now we read
-outputLines = retrieveList();
-for line in outputLines:
-    errorTracker.processError(line);
+    # read output
+    tracker = errorTracker(progTrackers);
+    # utilities.py has already taken care of writing to 'errors'.  
+    # now we read
+    outputLines = retrieveList();
+    for line in outputLines:
+        tracker.processError(line);
 
-# Count measures
-chordification = chorale.chordify();
-measureCounter = 0;
-for i in range(len(chordification)):
-    if str(type(chordification[i])) == "<class 'music21.stream.Measure'>":
-        measureCounter += 1;
+    # Count measures
+    chordification = chorale.chordify();
+    measureCounter = 0;
+    for i in range(len(chordification)):
+        if str(type(chordification[i])) == "<class 'music21.stream.Measure'>":
+            measureCounter += 1;
+        
+    # compute and print Bachness
+    out.append("Bachness Score: " + str(tracker.computeBachness(measureCounter)));
 
-# compute and print Bachness
-print("Bachness Score: " + str(errorTracker.computeBachness(measureCounter)));
+    out.append("--------------------Analysis Complete----------------");
 
-print("--------------------Analysis Complete----------------");
-
+    if errFlag == False:
+        return out;
+    else: return tracker;
 

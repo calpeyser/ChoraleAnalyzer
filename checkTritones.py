@@ -43,14 +43,15 @@ def checkTritones(slices):
     for count in range(0,len(slices) - 2):
         firstChord = slices[count].getChord();
         secondChord = slices[count + 1].getChord();
-        if (failedSopranoTritone(firstChord, secondChord)):
-            output.append('Soprano makes tritone in measure ' + str(firstChord[0].measureNumber));
-        if (failedAltoTritone(firstChord, secondChord)):
-            output.append('Alto makes tritone in measure ' + str(firstChord[1].measureNumber));
-        if (failedTenorTritone(firstChord, secondChord)):
-            output.append('Tenor makes tritone in measure ' + str(firstChord[2].measureNumber));
-        if (failedBassTritone(firstChord, secondChord)):
-            output.append('Bass makes tritone in measure ' + str(firstChord[3].measureNumber));
+        if len(firstChord) == 4 and len(secondChord) == 4:
+            if (failedSopranoTritone(firstChord, secondChord)):
+                output.append('Soprano makes tritone in measure ' + str(firstChord[0].measureNumber) + " beat " + str(firstChord[0].beat));
+            if (failedAltoTritone(firstChord, secondChord)):
+                output.append('Alto makes tritone in measure ' + str(firstChord[1].measureNumber) + " beat " + str(firstChord[1].beat));
+            if (failedTenorTritone(firstChord, secondChord)):
+                output.append('Tenor makes tritone in measure ' + str(firstChord[2].measureNumber) + " beat " + str(firstChord[2].beat));
+            if (failedBassTritone(firstChord, secondChord)):
+                output.append('Bass makes tritone in measure ' + str(firstChord[3].measureNumber) + " beat " + str(firstChord[3].beat));
 
         
        

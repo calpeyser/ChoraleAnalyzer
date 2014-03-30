@@ -1,8 +1,10 @@
-# Funciton checks for parallel unisons.  Returns an error message to
+# Funciton checks for parallel octaves.  Returns an error message to
 # be printed, if any.
 from music21 import *
 
-def checkParallelUnisons(input):
+#def getOffsets
+
+def checkParallelOctaves(input):
     # output is a list of strings which give error messages
     output = [];
 
@@ -20,8 +22,8 @@ def checkParallelUnisons(input):
                 if (offset in offsets2) and (offset != offsets2[-1]):
                     int1 = interval.Interval(offsetDict1[offset], offsetDict2[offset]);     
                     int2 = interval.Interval(offsetDict1[offsets1[offsets1.index(offset)+1]], offsetDict2[offsets2[offsets2.index(offset)+1]]);
-                    if (int1 == int2 == interval.Interval('P1')):
-                        output.append('Parallel unison in ' + str(partNames[partNumber1]) + ' and ' + str(partNames[partNumber2]) + " in measure " + str(offset).split(".")[0]);
+                    if (int1 == int2 == interval.Interval('P8')) or (int1 == int2 == interval.Interval('P16')):
+                        output.append('Parallel octave in ' + str(partNames[partNumber1]) + ' and ' + str(partNames[partNumber2]) + " in measure " + str(offset).split(".")[0]);
 
     return output;
     

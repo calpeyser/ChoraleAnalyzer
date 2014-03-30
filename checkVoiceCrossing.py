@@ -29,14 +29,15 @@ def checkVoiceCrossing(slices):
 
     for slice in slices:
         chord = slice.getChord();
-        if (failedBassTenorCross(chord)):
-            output.append('Bass/Tenor voice crossing in measure ' 
-                          + str(chord[3].measureNumber));
-        if (failedTenorAltoCross(chord)):
-            output.append('Tenor/Alto voice crossing in measure '
-                          + str(chord[2].measureNumber));
-        if (failedAltoSopranoCross(chord)):
-            output.append('Alto/Soprano voice crossing in measure '
-                          + str(chord[1].measureNumber));
+        if len(chord) == 4:
+            if (failedBassTenorCross(chord)):
+                output.append('Bass/Tenor voice crossing in measure ' 
+                              + str(chord[3].measureNumber) + " beat " + str(chord[3].beat));
+            if (failedTenorAltoCross(chord)):
+                output.append('Tenor/Alto voice crossing in measure '
+                              + str(chord[2].measureNumber) + " beat " + str(chord[2].beat));
+            if (failedAltoSopranoCross(chord)):
+                output.append('Alto/Soprano voice crossing in measure '
+                              + str(chord[1].measureNumber) + " beat " + str(chord[1].beat));
 
     return output;

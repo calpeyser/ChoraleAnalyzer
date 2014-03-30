@@ -44,17 +44,18 @@ def checkRanges(slices):
     # bass note to determine measure
     for slice in slices:
         chord = slice.getChord();
-        if (failedSopranoRange(chord)):
-            output.append('Soprano out of range in measure ' + 
-                          str(chord[3].measureNumber));
-        if (failedAltoRange(chord)):
-            output.append('Alto out of range in measure ' + 
-                          str(chord[3].measureNumber));
-        if (failedTenorRange(chord)):
-            output.append('Tenor out of range in measure ' +
-                          str(chord[3].measureNumber));
-        if (failedBassRange(chord)):
-            output.append('Bass out of range in measure ' +
-                          str(chord[3].measureNumber));
-        
+        if len(chord) == 4:
+            if (failedSopranoRange(chord)):
+                output.append('Soprano out of range in measure ' + 
+                              str(chord[3].measureNumber) + " beat " + str(chord[3].beat));
+            if (failedAltoRange(chord)):
+                output.append('Alto out of range in measure ' + 
+                              str(chord[3].measureNumber) + " beat " + str(chord[3].beat));
+            if (failedTenorRange(chord)):
+                output.append('Tenor out of range in measure ' +
+                              str(chord[3].measureNumber) + " beat " + str(chord[3].beat));
+            if (failedBassRange(chord)):
+                output.append('Bass out of range in measure ' +
+                              str(chord[3].measureNumber) + " beat " + str(chord[3].beat));
+            
     return removeDuplicates(output);

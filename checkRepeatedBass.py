@@ -24,6 +24,7 @@ def checkRepeatedBass(chordification):
                 bassNote = measures[m][n][-1];
                 bassNote.measureNum = m;
                 bassNote.bt = measures[m][n].beat + timeSignature*m;
+                bassNote.btForPrint = measures[m][n].beat;
                 bassNotes.append(bassNote);
 
     # Go note to note, and identify repeated bass notes
@@ -32,7 +33,7 @@ def checkRepeatedBass(chordification):
         secondNote = bassNotes[i+1];
         if firstNote.pitch == secondNote.pitch:
             if firstNote.bt + firstNote.duration.quarterLength < secondNote.bt:
-                output.append("Repeated bass note (" + str(secondNote.pitch) + ") in measure " + str(secondNote.measureNum));
+                output.append("Repeated bass note (" + str(secondNote.pitch) + ") in measure " + str(secondNote.measureNum) + " beat " + str(secondNote.btForPrint));
 
 
     

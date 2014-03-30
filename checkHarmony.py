@@ -6,6 +6,7 @@ from checkProgression import *
 from utilities import printErrors
 
 def checkHarmony(chorale, rntext):
+    out = [];
 
     # slices is a list of VerticalSlice objects, each of which 
     # contains one chord of the chorale.  Note that in each slice,
@@ -19,8 +20,10 @@ def checkHarmony(chorale, rntext):
 
     choraleAndRoman = [chorale, rom];
 
-    printErrors(verifyRNA, choraleAndRoman, "Verifying that Roman Numeral Analysis in fact reflects the score", "Roman Numeral Analysis appears to be correct");
+    for line in printErrors(verifyRNA, choraleAndRoman, "Verifying that Roman Numeral Analysis in fact reflects the score", "Roman Numeral Analysis appears to be correct"):
+        out.append(line);
     
-    printErrors(checkProgression, rom, "Validating chord progressions in Roman Numeral Analysis", "Chord Progression Valid");
+    for line in printErrors(checkProgression, rom, "Validating chord progressions in Roman Numeral Analysis", "Chord Progression Valid"):
+        out.append(line);
 
-   
+    return out;

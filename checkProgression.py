@@ -1,5 +1,4 @@
-# Funciton checks for repeated bass notes.  Returns an error message to
-# be printed, if any.
+# Funciton checks for illegal progressions
 from music21 import *
 from progressionChecker import *
  
