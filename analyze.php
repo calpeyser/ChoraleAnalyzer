@@ -18,6 +18,6 @@ $output = array();
 
 $s = shell_exec("python copyFiles.py $arg1 $arg2");
 echo $s;
-exec("python ChoraleAnalyzer/printAnalysis.py xmlfile.xml rnafile.txt 2> out", $output);
+exec("python printAnalysis.py xmlfile.xml rnafile.txt 2> out", $output);
 print_r($output);
 ?>
