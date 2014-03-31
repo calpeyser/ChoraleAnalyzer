@@ -15,3 +15,5 @@ f2 = open("rnafile.txt", "w");
 f1.write(xmlString);
 f2.write(rnaString);
 
+close(f1);
+close(f2);
