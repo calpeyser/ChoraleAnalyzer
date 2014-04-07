@@ -21,6 +21,28 @@
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     
+    <?php
+      error_reporting(0);
+      session_start();  // Killing warning for this call.
+      error_reporting(E_ERROR | E_WARNING | E_PARSE);
+      $username = $_SESSION['username'];
+      // connect
+      $db_hostname = '127.0.0.1'; $db_database = 'ChoraleAnalyzerDB'; $db_username = 'calpeyser'; $db_password = 'charleb'; // some details
+      $db_server = mysql_connect($db_hostname, $db_username, $db_password);
+      if (!$db_server) die("Unable to connect to MySQL: " . mysql_error());
+
+      // select
+      mysql_select_db($db_database)
+      or die("Unable to select database: " . mysql_error());
+
+      // query
+      $query = "SELECT * FROM chorales WHERE user = '$username'";
+      $result = mysql_query($query);
+      if (!$result) die ("Database access failed: " . mysql_error());
+      $rows = mysql_num_rows($result);
+
+    ?>
+
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -64,7 +86,7 @@
     <div class="jumbotron">
       <div class="container">
         <h1><?php echo "Welcome, ".$_SESSION['username'] ?></h1>
-        <p>BLERGBLERB</p>
+        <p>Use this page to analyze your chorales for errors, and to track your long-term error profile.</p>
       </div>
     </div>
 
@@ -72,10 +94,12 @@
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-4">
-          <h2>BLERG</h2>
-          <p>Blerg</p>
-          <form action="ChoraleAnalyzer/analyze.php" method="POST" enctype="multipart/for\
+          <h2>Analyze a Chorale</h2>
+          <p>Your input will be stored for later reference.</p>
+          <form action="analyze.php" method="POST" enctype="multipart/for\
           m-data">
+          <label for ="name">Please provide a name for your chorale:</label>
+          <input type="text" name="name" id="name"><br>
           <label for="chorale">XML Formatted Chorale</label>
           <input type="file" name="chorale" id="chorale"><br>
           <label for="RNA">Romantext Formatted RNA</label>
@@ -84,12 +108,22 @@
           </form>
         </div>
         <div class="col-md-4">
-          <h2>BLERG</h2>
-          <p>Blerg </p>
-          <p><a class="btn btn-default" href="#" role="button">Create an Account &raquo;</a></p>
+          <h2>View Your Chorales</h2>
+          <?php
+      // display
+              echo "<B>Chorales in memory:</B> <BR>";
+              echo "<SELECT NAME=\"Chorales\" SIZE=\"10\" MULTIPLE >";
+
+              for ($j = 0; $j < $rows; ++$j)
+              {
+                echo "<OPTION>".mysql_result($result, $j, 'name'); 
+              }
+
+              echo "</SELECT>          </ul>";
+          ?>
        </div>
         <div class="col-md-4">
-          <h2>BLERG</h2>
+          <h2>BLERG</h2
           <p>Blerg</p>
           <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
         </div>
