@@ -36,7 +36,7 @@
       or die("Unable to select database: " . mysql_error());
 
       // query
-      $query = "SELECT * FROM chorales WHERE user = '$username'";
+      $query = "SELECT * FROM chorales WHERE username = '$username'";
       $result = mysql_query($query);
       if (!$result) die ("Database access failed: " . mysql_error());
       $rows = mysql_num_rows($result);
@@ -73,6 +73,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#">ChoraleAnalyzer</a>
+          <a class="navbar-brand" href=<?php echo "http://$homepage/ChoraleAnalyzer/about.php" ?>>About</a>
         </div>
         <div class="navbar-collapse collapse">
           <form class="navbar-form navbar-right" role="form" action="logout.php" method="POST">
@@ -96,9 +97,13 @@
         <div class="col-md-4">
           <h2>Analyze a Chorale</h2>
           <p>Your input will be stored for later reference.</p>
-          <form action="analyze.php" method="POST" enctype="multipart/for\
-          m-data">
-          <label for ="name">Please provide a name for your chorale:</label>
+          <?php if (isset($_GET['nameunique'])) {
+            $name = $_GET['nameunique'];
+            echo "<p><font color=\"red\">You already have a chorale called $name.<br>Please choose another name.</font></p>";
+          }  
+          ?>
+          <form action="analyzeAndStore.php" method="POST" enctype="multipart/form-data">
+          <label for="name">Provide a name for your chorale</label>
           <input type="text" name="name" id="name"><br>
           <label for="chorale">XML Formatted Chorale</label>
           <input type="file" name="chorale" id="chorale"><br>
@@ -112,7 +117,7 @@
           <?php
       // display
               echo "<B>Chorales in memory:</B> <BR>";
-              echo "<SELECT NAME=\"Chorales\" SIZE=\"10\" MULTIPLE >";
+              echo "<SELECT NAME=\"Chorales\" ID=\"Chorales\" SIZE=\"10\" MULTIPLE >";
 
               for ($j = 0; $j < $rows; ++$j)
               {
@@ -121,11 +126,20 @@
 
               echo "</SELECT>          </ul>";
           ?>
+       <button onclick="queue_chorales()">Queue for Analysis</button>
        </div>
         <div class="col-md-4">
-          <h2>BLERG</h2
-          <p>Blerg</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Analyze an Error Profile </h2>
+          <p>By selecting some subset of submitted chorales, you can determine the propensity of each sort of error.</p>
+          <SELECT Name="to_analyze" ID="to_analyze" Size="10">
+            <?php
+              foreach ($names_of_chorales_to_analyze as $name) {
+                echo "<OPTION>".$name;
+              } 
+            ?>
+          </SELECT>
+
+
         </div>
       </div>
 
@@ -136,7 +150,22 @@
       </footer>
     </div> <!-- /container -->
 
-
+    <script>
+      function queue_chorales() {
+        var selected_chorales = new Array();
+        Chorales = document.getElementById("Chorales");
+        for (var i=0; i<Chorales.length;i++) {
+          if (Chorales.options[i].selected) {
+            selected_chorales.push(Chorales.options[i]);
+          }
+        }
+       for (var j = 0; j < selected_chorales.length; j++) {
+          var option = document.createElement("option");
+          option.text = selected_chorales[j].text;
+          document.getElementById("to_analyze").add(option);
+        }
+      }
+    </script>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

@@ -16,34 +16,77 @@ if (isset($_POST['newusername']) and isset($_POST['newpassword']) and isset($_PO
 		}
 		// check that username doesn't already exist
 		// connect
-		$db_hostname = '127.0.0.1'; $db_database = 'ChoraleAnalyzerDB'; $db_username = 'calpeyser'; $db_password = 'charleb'; // some details
-		$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-		if (!$db_server) die("Unable to connect to MySQL: " . mysql_error());
+
+    // from http://www.pontikis.net/blog/how-to-use-php-improved-mysqli-extension-and-why-you-should
+    $DBServer = '127.0.0.1';
+    $DBUser = 'calpeyser';
+    $DBPass = 'charleb';
+    $DBName = 'ChoraleAnalyzerDB';
+    $conn = new mysqli($DBServer, $DBUser, $DBPass, $DBName);
+    if (mysqli_connect_errno()) {
+      trigger_error('Database connection failed: ' . mysqli_connct_error(), E_USER_ERROR);
+    }
+
+
+		//$db_hostname = '127.0.0.1'; $db_database = 'ChoraleAnalyzerDB'; $db_username = 'calpeyser'; $db_password = 'charleb'; // some details
+		//$db_server = mysql_connect($db_hostname, $db_username, $db_password);
+		//if (!$db_server) die("Unable to connect to MySQL: " . mysql_error());
 
 		// select
-		mysql_select_db($db_database)
-		or die("Unable to select database: " . mysql_error());
+		//mysqli_select_db($db_database)
+		//or die("Unable to select database: " . mysqli_error());
 
 		// query
 		$query = "SELECT * FROM users";
-		$result = mysql_query($query);
-		if (!$result) die ("Database access failed: " . mysql_error());
-		$rows = mysql_num_rows($result); // all the usernames
-		for ($j = 0; $j < $rows; ++$j)
-		{
-			if (mysql_result($result, $j, 'username') == $_POST['newusername']) {
-				print "We're sorry, " . $_POST['newusername'] . " is already in use. Please choose another username and try again.";
-				goto renderPage;
-			}
-		}
+		$rs = $conn->query($query);
+
+    if($rs === false) {
+    trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+    } else {
+      $rows_returned = $rs->num_rows;
+    }
+
+		//if (!$result) die ("Database access failed: " . mysqli_error());
+		//$rows = mysqli_num_rows($result); // all the usernames
+		//for ($j = 0; $j < $rows; ++$j)
+		//{
+		//	if (mysqli_result($result, $j, 'username') == $_POST['newusername']) {
+		//		print "We're sorry, " . $_POST['newusername'] . " is already in use. Please choose another username and try again.";
+		//		goto renderPage;
+		//	}
+		//}
+
+    $rs->data_seek(0);
+    while($row = $rs->fetch_assoc()){
+      if ($row['username'] == $_POST['newusername']) {
+        print "We're sorry, " . $_POST['newusername'] . " is already in use. Please choose another username and try again.";
+        goto renderPage;
+      }
+    }
+
+    $newusername = $_POST['newusername'];
+    $newpassword = $_POST['newpassword'];
+
+    $v1="'" . $conn->real_escape_string("$newusername") . "'";
+    $v2="'" . $conn->real_escape_string("$newpassword") . "'";
+     
+    $sql="INSERT INTO users (username, password) VALUES ($v1,$v2)";
+     
+    if($conn->query($sql) === false) {
+      trigger_error('Wrong SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
+    } else {
+      $last_inserted_id = $conn->insert_id;
+      $affected_rows = $conn->affected_rows;
+    }
+
 
 		// we know this username dosen't already exist, so we can add it to the database
-		$newusername = $_POST['newusername'];
-		$newpassword = $_POST['newpassword'];
-		$query = "INSERT INTO users (username, password) VALUES ('$newusername', '$newpassword')";
-		$result2 = mysql_query($query);
-		if (!$result2) die ("Problem putting new username and password into database: " . mysql_error());
-		header("Location: http://$homepage");
+//		$newusername = $_POST['newusername'];
+//		$newpassword = $_POST['newpassword'];
+//		$query = "INSERT INTO users (username, password) VALUES ('$newusername', '$newpassword')";
+//		$result2 = mysqli_query($query);
+//		if (!$result2) die ("Problem putting new username and password into database: " . mysqli_error());
+//		header("Location: http://$homepage");
 	}
 	else {
 		echo "Please fill out the entire form.";
@@ -101,6 +144,7 @@ renderPage:
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href=<?php echo "http://$homepage" ?> >ChoraleAnalyzer</a>
+          <a class="navbar-brand" href=<?php echo "http://$homepage/ChoraleAnalyzer/about.php" ?>>About</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
